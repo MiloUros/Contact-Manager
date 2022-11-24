@@ -1,5 +1,5 @@
 package com.ingsoftware.contactmanager.domain.enums;
 
-public enum ContactType {
+public enum Type {
     FAMILY, FRIEND, WORK
 }

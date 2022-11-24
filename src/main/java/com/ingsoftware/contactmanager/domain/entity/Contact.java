@@ -1,6 +1,5 @@
 package com.ingsoftware.contactmanager.domain.entity;
 
-import com.ingsoftware.contactmanager.domain.enums.ContactType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +17,7 @@ import java.time.LocalDateTime;
 public class Contact {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "contact_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "created_at")
@@ -34,18 +32,18 @@ public class Contact {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email")
+    @Column(unique = true)
     private String email;
 
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "contact_type")
+    @JoinColumn(name = "contact_type")
+    @ManyToOne
     private ContactType contactType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
 
 }

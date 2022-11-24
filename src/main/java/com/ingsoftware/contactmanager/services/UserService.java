@@ -19,4 +19,8 @@ public class UserService {
     public String helloWorldApi() {
         return "Hello World";
     }
+
+    public User save(User user) {
+      return   userRepository.save(user);
+    }
 }

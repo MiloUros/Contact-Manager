@@ -26,4 +26,5 @@ public class UserController {
     public ResponseEntity<String> helloWorldApi() {
         return ResponseEntity.ok(userService.helloWorldApi());
     }
+
 }

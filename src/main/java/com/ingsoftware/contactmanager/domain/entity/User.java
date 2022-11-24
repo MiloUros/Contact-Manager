@@ -1,10 +1,7 @@
 package com.ingsoftware.contactmanager.domain.entity;
 
 import com.ingsoftware.contactmanager.domain.enums.UserRole;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -20,8 +17,7 @@ import java.util.List;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "created_at")
@@ -36,15 +32,16 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "email", unique = true)
+    @Column(unique = true)
     private String email;
 
     @Column(name = "user_password")
     private String password;
 
     @Column(name = "user_role")
+    @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private List<Contact> usersContacts = new ArrayList<>();
 }
