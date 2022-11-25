@@ -1,6 +1,6 @@
 package com.ingsoftware.contactmanager.domain.entity;
 
-import com.ingsoftware.contactmanager.domain.enums.UserRole;
+import com.ingsoftware.contactmanager.domain.enums.Role;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,12 +35,10 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @Column(name = "user_password")
     private String password;
 
-    @Column(name = "user_role")
     @Enumerated(EnumType.STRING)
-    private UserRole userRole;
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Contact> usersContacts = new ArrayList<>();

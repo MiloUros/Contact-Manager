@@ -38,7 +38,11 @@ public class Contact {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @JoinColumn(name = "contact_type")
+    private String address;
+
+    private String info;
+
+    @JoinColumn(name = "contact_type_id")
     @ManyToOne
     private ContactType contactType;
 
