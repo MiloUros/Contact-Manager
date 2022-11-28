@@ -1,15 +1,13 @@
-package com.ingsoftware.contactmanager.domain.entity;
+package com.ingsoftware.contactmanager.domain.entitys;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -17,11 +15,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "contacts_types")
+@Builder(toBuilder = true)
 public class ContactType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private UUID identifier = UUID.randomUUID();
 
     @OneToMany(mappedBy = "contactType")
     private List<Contact> contactsPerContactType = new ArrayList<>();

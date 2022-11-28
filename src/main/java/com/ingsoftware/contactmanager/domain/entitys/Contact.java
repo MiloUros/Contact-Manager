@@ -1,12 +1,13 @@
-package com.ingsoftware.contactmanager.domain.entity;
+package com.ingsoftware.contactmanager.domain.entitys;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -20,11 +21,15 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private UUID identifier = UUID.randomUUID();
+
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    private LocalDateTime updatedAy;
+    private LocalDateTime updatedAt;
 
     @Column(name = "first_name")
     private String firstName;
@@ -42,10 +47,12 @@ public class Contact {
 
     private String info;
 
-    @JoinColumn(name = "contact_type_id")
+    @JsonIgnore
     @ManyToOne
+    @JoinColumn(name = "contact_type_id")
     private ContactType contactType;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
