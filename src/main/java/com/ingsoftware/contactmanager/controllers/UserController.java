@@ -5,6 +5,7 @@ import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
 import com.ingsoftware.contactmanager.domain.userDtos.UserInfoDto;
 import com.ingsoftware.contactmanager.domain.userDtos.UserLogInDto;
 import com.ingsoftware.contactmanager.domain.userDtos.UserRegisterDto;
+import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
 import com.ingsoftware.contactmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,4 +60,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.addContact(contactCreationDto, id));
     }
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<String> updateUser(@PathVariable("userId") UUID userID, @RequestBody UserRequestDto userRequestDto) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.editUser(userID, userRequestDto));
+    }
 }

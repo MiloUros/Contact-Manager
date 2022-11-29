@@ -3,7 +3,9 @@ package com.ingsoftware.contactmanager.domain.entitys;
 import com.ingsoftware.contactmanager.domain.enums.Role;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -23,7 +25,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID identifier = UUID.randomUUID();
+    @Generated(GenerationTime.INSERT)
+    @Column(name = "identifier")
+    private UUID identifier;
 
     @Column(name = "created_at")
     @CreationTimestamp

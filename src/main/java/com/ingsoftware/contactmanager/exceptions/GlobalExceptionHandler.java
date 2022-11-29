@@ -15,6 +15,30 @@ public class GlobalExceptionHandler {
         return createErrorMessage(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ErrorMessage invalidPasswordException(InvalidPasswordException e) {
+        return createErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @ExceptionHandler(InvalidEmailException.class)
+    public ErrorMessage invalidEmailException(InvalidEmailException e) {
+        return createErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ExceptionHandler(ContactNotFoundException.class)
+    public ErrorMessage contactNotFound(ContactNotFoundException e) {
+        return createErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @ExceptionHandler(EmailTakenException.class)
+    public ErrorMessage emailTakenException(EmailTakenException e) {
+        return createErrorMessage(e.getMessage());
+    }
+
     private ErrorMessage createErrorMessage(String message) {
         return ErrorMessage.builder().errorMessage(message).build();
     }

@@ -6,11 +6,13 @@ import com.ingsoftware.contactmanager.domain.userDtos.UserRegisterDto;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.mappers.ContactMapper;
 import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
-import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
-import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
+import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.exceptions.*;
 import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
+import com.ingsoftware.contactmanager.security.PasswordValidation;
 import lombok.AllArgsConstructor;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,17 +28,29 @@ public class UserService {
     private final UserMapper userMapper;
     private final ContactMapper contactMapper;
     private final ContactRepository contactRepository;
+    private final PasswordValidation passwordValidation;
 
     public String helloWorldApi() {
         return "Hello World";
     }
 
     public User registerUser(UserRegisterDto userRegisterDto) {
+        if (!EmailValidator.getInstance().isValid(userRegisterDto.getEmail())) {
+            throw new InvalidEmailException("Invalid Email");
+        }
+
+        if (!passwordValidation.validatePassword(userRegisterDto.getPassword()).isValid()) {
+            throw new InvalidPasswordException("Invalid Password");
+        }
+
+        if (userRepository.existsByEmail(userRegisterDto.getEmail())) {
+            throw new EmailTakenException("Email already taken.");
+        }
+
         return userRepository.save(userMapper.userRegisterDtoToEntity(userRegisterDto));
     }
 
     public User userLogIn(String email, String password) {
-
         return userRepository.findByEmail(email).orElseThrow(()
                 -> new UserNotFoundException("Invalid email"));
     }
@@ -67,7 +81,8 @@ public class UserService {
     }
 
     public String addContact(ContactCreationDto contactCreationDto, UUID id) {
-        var user = userRepository.findByIdentifier(id).orElseThrow(() -> new UserNotFoundException("Invalid id"));
+        var user = userRepository.findByIdentifier(id).orElseThrow(() ->
+                new UserNotFoundException("Invalid id"));
         var contact = contactMapper.contactCreationDtoToUser(contactCreationDto);
         contact.setUser(user);
         contactRepository.save(contact);
@@ -75,4 +90,23 @@ public class UserService {
         return "Created!";
     }
 
+    public String editUser(UUID userId, UserRequestDto userRequestDto) {
+        var user = userRepository.findByIdentifier(userId).orElseThrow(()
+                -> new UserNotFoundException("Invalid user id"));
+
+        if (!EmailValidator.getInstance().isValid(userRequestDto.getEmail())) {
+            throw new InvalidEmailException("Invalid email");
+        }
+
+        if (!passwordValidation.validatePassword(userRequestDto.getPassword()).isValid()) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        user.setFirstName(userRequestDto.getFirstName());
+        user.setLastName(userRequestDto.getLastName());
+        user.setPassword(userRequestDto.getPassword());
+        user.setEmail(userRequestDto.getEmail());
+
+        return "Updated";
+    }
 }

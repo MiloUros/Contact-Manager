@@ -3,7 +3,9 @@ package com.ingsoftware.contactmanager.domain.entitys;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,7 +23,9 @@ public class Contact {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID identifier = UUID.randomUUID();
+    @Generated(GenerationTime.INSERT)
+    @Column(name = "identifier")
+    private UUID identifier;
 
     @CreationTimestamp
     @Column(name = "created_at")

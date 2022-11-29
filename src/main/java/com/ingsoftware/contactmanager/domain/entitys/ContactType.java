@@ -2,8 +2,12 @@ package com.ingsoftware.contactmanager.domain.entitys;
 
 
 import lombok.*;
+import org.hibernate.annotations.Generated;
+import org.hibernate.annotations.GenerationTime;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,9 @@ public class ContactType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private UUID identifier = UUID.randomUUID();
+    @Generated(GenerationTime.INSERT)
+    @Column(name = "identifier")
+    private UUID identifier;
 
     @OneToMany(mappedBy = "contactType")
     private List<Contact> contactsPerContactType = new ArrayList<>();
