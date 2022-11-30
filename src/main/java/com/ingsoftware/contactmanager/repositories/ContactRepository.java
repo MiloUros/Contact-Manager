@@ -1,6 +1,7 @@
 package com.ingsoftware.contactmanager.repositories;
 
 import com.ingsoftware.contactmanager.domain.entitys.Contact;
+import com.ingsoftware.contactmanager.domain.entitys.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +13,8 @@ import java.util.UUID;
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     void deleteContactById(Long id);
+    void deleteAllByUser(User user);
     List<Contact> findAll();
-    Optional<Contact> findByIdentifier(UUID id);
+    Optional<Contact> findByGuid(UUID id);
 
 }

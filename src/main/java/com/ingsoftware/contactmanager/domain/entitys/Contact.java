@@ -17,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "contacts")
+@Builder(toBuilder = true)
 public class Contact {
 
     @Id
@@ -24,15 +25,15 @@ public class Contact {
     private Long id;
 
     @Generated(GenerationTime.INSERT)
-    @Column(name = "identifier")
-    private UUID identifier;
+    @Column(name = "guid")
+    private UUID guid;
 
-    @CreationTimestamp
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "first_name")
@@ -55,6 +56,8 @@ public class Contact {
     @ManyToOne
     @JoinColumn(name = "contact_type_id")
     private ContactType contactType;
+
+    private String type;
 
     @JsonIgnore
     @ManyToOne

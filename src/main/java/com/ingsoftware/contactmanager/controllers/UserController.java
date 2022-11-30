@@ -1,6 +1,5 @@
 package com.ingsoftware.contactmanager.controllers;
 
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactCreationDto;
 import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
 import com.ingsoftware.contactmanager.domain.userDtos.UserInfoDto;
 import com.ingsoftware.contactmanager.domain.userDtos.UserLogInDto;
@@ -25,7 +24,7 @@ public class UserController {
 
     @GetMapping()
     public ResponseEntity<List<UserInfoDto>> findAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
+        return ResponseEntity.ok(userService.findAllUsers());
     }
 
     @GetMapping("/hello")
@@ -35,8 +34,7 @@ public class UserController {
 
     @PostMapping()
     public ResponseEntity<UserInfoDto> createUser(@RequestBody UserRegisterDto userRegisterDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(mapper.
-                userToUserInfoDto(userService.registerUser(userRegisterDto)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userRegisterDto));
     }
 
     @PostMapping("/user")
@@ -45,23 +43,14 @@ public class UserController {
                 userLogIn(userLogInDto.getEmail(), userLogInDto.getPassword())));
     }
 
-    @DeleteMapping("/{userId}/{contactId}")
-    public ResponseEntity<String> deleteUserContactById(@PathVariable("userId") UUID userId, @PathVariable("contactId") UUID contactId) {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteContactById(userId, contactId));
-    }
-
     @DeleteMapping("{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(userService.deleteUserById(id));
     }
 
-    @PostMapping("/contacts/{id}")
-    public ResponseEntity<String> createContact(@RequestBody ContactCreationDto contactCreationDto, @PathVariable("id") UUID id) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.addContact(contactCreationDto, id));
-    }
-
-    @PutMapping("/{userId}")
-    public ResponseEntity<String> updateUser(@PathVariable("userId") UUID userID, @RequestBody UserRequestDto userRequestDto) {
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable("id") UUID userID, @RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.editUser(userID, userRequestDto));
     }
+
 }

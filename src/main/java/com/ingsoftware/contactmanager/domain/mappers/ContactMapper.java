@@ -16,7 +16,8 @@ public abstract class ContactMapper {
     @Mapping(target = "address", ignore = true)
     @Mapping(target = "info", ignore = true)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "identifier", ignore = true)
+    @Mapping(target = "guid", ignore = true)
+    @Mapping(target = "type", ignore = true)
     public abstract Contact contactCreationDtoToUser(ContactCreationDto contactCreationDto);
 
     public abstract ContactInfoDto contactToContactInfoDto(Contact contact);

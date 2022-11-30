@@ -11,12 +11,10 @@ import org.mapstruct.Mapping;
 public abstract class UserMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "firstName", ignore = true)
-    @Mapping(target = "lastName", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "usersContacts", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "identifier", ignore = true)
+    @Mapping(target = "guid", ignore = true)
     public abstract User userRegisterDtoToEntity(UserRegisterDto userRegisterDto);
 
     @Mapping(target = "id", ignore = true)
@@ -26,7 +24,7 @@ public abstract class UserMapper {
     @Mapping(target = "usersContacts", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "role", ignore = true)
-    @Mapping(target = "identifier", ignore = true)
+    @Mapping(target = "guid", ignore = true)
     public abstract User userLogInDtoToEntity(UserLogInDto userLogInDto);
 
     public abstract UserInfoDto userToUserInfoDto(User user);

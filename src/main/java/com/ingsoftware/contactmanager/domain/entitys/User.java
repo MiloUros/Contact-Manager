@@ -26,15 +26,15 @@ public class User {
     private Long id;
 
     @Generated(GenerationTime.INSERT)
-    @Column(name = "identifier")
-    private UUID identifier;
+    @Column(name = "guid")
+    private UUID guid;
 
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @UpdateTimestamp
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @Column(name = "first_name")

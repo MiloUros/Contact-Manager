@@ -39,6 +39,18 @@ public class GlobalExceptionHandler {
         return createErrorMessage(e.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @ExceptionHandler(ContactTypeNotFound.class)
+    public ErrorMessage contactTypeNotFound(ContactTypeNotFound e) {
+        return createErrorMessage(e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @ExceptionHandler(ContactTypeExistsException.class)
+    public ErrorMessage contactTypeExistsException(ContactTypeExistsException e) {
+        return createErrorMessage(e.getMessage());
+    }
+
     private ErrorMessage createErrorMessage(String message) {
         return ErrorMessage.builder().errorMessage(message).build();
     }

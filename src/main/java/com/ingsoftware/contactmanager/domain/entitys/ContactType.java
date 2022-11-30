@@ -2,8 +2,10 @@ package com.ingsoftware.contactmanager.domain.entitys;
 
 
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import javax.persistence.Entity;
@@ -27,17 +29,20 @@ public class ContactType {
     private Long id;
 
     @Generated(GenerationTime.INSERT)
-    @Column(name = "identifier")
-    private UUID identifier;
+    @Column(name = "guid")
+    private UUID guid;
 
     @OneToMany(mappedBy = "contactType")
     private List<Contact> contactsPerContactType = new ArrayList<>();
 
     @Column(name = "created_at")
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAy;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-    private String contactTypeName;
+    private String value;
+
 }
