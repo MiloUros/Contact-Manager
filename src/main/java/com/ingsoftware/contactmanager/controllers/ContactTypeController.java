@@ -24,7 +24,7 @@ public class ContactTypeController {
     }
 
     @PostMapping()
-    public ResponseEntity<ContactTypeInfoDto> createContact(@RequestBody ContactTypeRequestDto contactTypeRequestDto) {
+    public ResponseEntity<ContactTypeInfoDto> createContactType(@RequestBody ContactTypeRequestDto contactTypeRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).
                 body(contactTypeService.createContactType(contactTypeRequestDto));
     }

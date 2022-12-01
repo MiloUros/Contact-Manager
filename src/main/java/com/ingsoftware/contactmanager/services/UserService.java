@@ -26,7 +26,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordValidation passwordValidation;
-    private final ContactRepository contactRepository;
 
     public String helloWorldApi() {
         return "Hello World";
@@ -66,7 +65,6 @@ public class UserService {
     public String deleteUserById(UUID id) {
         var user = userRepository.findByGuid(id).orElseThrow(()
                 -> new UserNotFoundException("User not found"));
-        contactRepository.deleteAllByUser(user);
         userRepository.delete(user);
         return "Deleted!";
     }

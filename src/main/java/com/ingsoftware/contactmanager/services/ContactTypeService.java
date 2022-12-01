@@ -50,9 +50,8 @@ public class ContactTypeService {
 
         List<Contact> contactsWithContactType = contactType.getContactsPerContactType();
 
-        for (var contact : contactsWithContactType) {
-            contact.setContactType(null);
-            contact.setType(null);
+        if (contactsWithContactType != null) {
+            throw new ContactTypeExistsException("Some contacts have this contact type and u can't delete it.");
         }
 
         contactTypeRepository.deleteByGuid(id);
