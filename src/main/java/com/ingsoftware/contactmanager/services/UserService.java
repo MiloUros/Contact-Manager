@@ -1,16 +1,15 @@
 package com.ingsoftware.contactmanager.services;
 
-import com.ingsoftware.contactmanager.domain.userDtos.UserInfoDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRegisterDto;
+import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
 import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
-import com.ingsoftware.contactmanager.exceptions.*;
-import com.ingsoftware.contactmanager.repositories.ContactRepository;
+import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
+import com.ingsoftware.contactmanager.exceptions.EmailTakenException;
+import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
-import com.ingsoftware.contactmanager.security.PasswordValidation;
 import lombok.AllArgsConstructor;
-import org.apache.commons.validator.routines.EmailValidator;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -25,72 +24,58 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordValidation passwordValidation;
+    private final PasswordEncoder passwordEncoder;
 
-    public String helloWorldApi() {
-        return "Hello World";
+    public User findUser(String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
     }
 
-    public UserInfoDto registerUser(UserRegisterDto userRegisterDto) {
-        if (!EmailValidator.getInstance().isValid(userRegisterDto.getEmail())) {
-            throw new InvalidEmailException("Invalid Email");
+    public UserResponseDto findUser(UUID userUUID) {
+        var user = userRepository.findByGuid(userUUID).orElseThrow(()
+                -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
+        return userMapper.userToUserInfoDto(user);
+    }
+
+    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
+
+        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
+            throw new EmailTakenException(CommonErrorMessages.EMAIL_TAKEN);
         }
 
-        if (!passwordValidation.validatePassword(userRegisterDto.getPassword()).isValid()) {
-            throw new InvalidPasswordException("Invalid Password");
-        }
-
-        if (userRepository.existsByEmail(userRegisterDto.getEmail())) {
-            throw new EmailTakenException("Email already taken.");
-        }
-
-        var user = userMapper.userRegisterDtoToEntity(userRegisterDto);
+        var user = userMapper.userRegisterDtoToEntity(userRequestDto);
         userRepository.save(user);
         return userMapper.userToUserInfoDto(user);
     }
 
-    public User userLogIn(String email, String password) {
-        return userRepository.findByEmail(email).orElseThrow(()
-                -> new UserNotFoundException("Invalid email"));
-    }
-
-    public List<UserInfoDto> findAllUsers() {
-        List<UserInfoDto> userInfoDTOList = new ArrayList<>();
+    public List<UserResponseDto> findAllUsers() {
+        List<UserResponseDto> userResponseDTOList = new ArrayList<>();
         for (var user : userRepository.findAll()) {
-            userInfoDTOList.add(userMapper.userToUserInfoDto(user));
+            userResponseDTOList.add(userMapper.userToUserInfoDto(user));
         }
-        return userInfoDTOList;
+        return userResponseDTOList;
     }
 
-    public String deleteUserById(UUID id) {
+    public void deleteUserById(UUID id) {
         var user = userRepository.findByGuid(id).orElseThrow(()
-                -> new UserNotFoundException("User not found"));
+                -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
         userRepository.delete(user);
-        return "Deleted!";
+
     }
 
-    public String editUser(UUID userId, UserRequestDto userRequestDto) {
+    public UserResponseDto editUser(UUID userId, UserRequestDto userRequestDto) {
         var user = userRepository.findByGuid(userId).orElseThrow(()
-                -> new UserNotFoundException("Invalid user id"));
+                -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
 
-        if (!EmailValidator.getInstance().isValid(userRequestDto.getEmail())) {
-            throw new InvalidEmailException("Invalid email");
-        }
-
-        if (!passwordValidation.validatePassword(userRequestDto.getPassword()).isValid()) {
-            throw new InvalidPasswordException("Invalid password");
-        }
-
-        if (userRepository.existsByEmail(userRequestDto.getEmail())) {
-            throw new EmailTakenException("Email taken, enter another one.");
+        if (userRepository.existsByEmail(userRequestDto.getEmail()) && !user.getEmail().equals(userRequestDto.getEmail())) {
+            throw new EmailTakenException(CommonErrorMessages.EMAIL_TAKEN);
         }
 
         user.setFirstName(userRequestDto.getFirstName());
         user.setLastName(userRequestDto.getLastName());
-        user.setPassword(userRequestDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         user.setEmail(userRequestDto.getEmail());
         user.setUpdatedAt(LocalDateTime.now());
 
-        return "Updated";
+        return userMapper.userToUserInfoDto(user);
     }
 }

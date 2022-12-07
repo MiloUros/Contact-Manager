@@ -8,8 +8,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +25,11 @@ public class ContactType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true)
     private Long id;
 
     @Generated(GenerationTime.INSERT)
-    @Column(name = "guid")
+    @Column(unique = true)
     private UUID guid;
 
     @OneToMany(mappedBy = "contactType")
@@ -43,6 +43,8 @@ public class ContactType {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(unique = true)
+    @NotBlank
     private String value;
 
 }

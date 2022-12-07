@@ -1,16 +1,16 @@
 package com.ingsoftware.contactmanager.services;
 
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactCreationDto;
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactInfoDto;
+import com.ingsoftware.contactmanager.CommonErrorMessages;
+import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
 import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
 import com.ingsoftware.contactmanager.domain.mappers.ContactMapper;
+import com.ingsoftware.contactmanager.exceptions.ActionNotAllowedException;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
 import com.ingsoftware.contactmanager.exceptions.InvalidEmailException;
 import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,23 +28,31 @@ public class ContactService {
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
 
-    public List<ContactInfoDto> findAllContacts() {
+    public List<ContactResponseDto> findAllContacts() {
 
-        List<ContactInfoDto> contactInfoDtoList = new ArrayList<>();
+        List<ContactResponseDto> contactResponseDtoList = new ArrayList<>();
 
         for (var contacts : contactRepository.findAll()) {
-            contactInfoDtoList.add(contactMapper.contactToContactInfoDto(contacts));
+            contactResponseDtoList.add(contactMapper.contactToContactInfoDto(contacts));
         }
 
-        return contactInfoDtoList;
+        return contactResponseDtoList;
 
     }
 
-    public List<ContactInfoDto> findAllUserContacts(UUID userID) {
+    public ContactResponseDto findContact(UUID contactID) {
 
-        List<ContactInfoDto> allContacts = new ArrayList<>();
+        var contact = contactRepository.findByGuid(contactID).orElseThrow(()
+                -> new ContactNotFoundException(CommonErrorMessages.CONTACT_NOT_FOUND));
 
-        var user = userRepository.findByGuid(userID).orElseThrow(() -> new UserNotFoundException("Invalid id"));
+        return contactMapper.contactToContactInfoDto(contact);
+    }
+
+    public List<ContactResponseDto> findAllUserContacts(UUID userID) {
+
+        List<ContactResponseDto> allContacts = new ArrayList<>();
+
+        var user = userRepository.findByGuid(userID).orElseThrow(() -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
 
         for (var contact : user.getUsersContacts()) {
             allContacts.add(contactMapper.contactToContactInfoDto(contact));
@@ -54,13 +62,16 @@ public class ContactService {
 
     }
 
-    public String editContact(UUID contactId, ContactRequestDto contactRequestDto) {
+    public ContactResponseDto editContact(UUID contactId, ContactRequestDto contactRequestDto, String userEmail) {
 
         var contact = contactRepository.findByGuid(contactId).orElseThrow(()
-                -> new ContactNotFoundException("Invalid contact id"));
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
 
-        if (!EmailValidator.getInstance().isValid(contactRequestDto.getEmail())) {
-            throw new InvalidEmailException("Invalid email");
+        var user = userRepository.findByEmail(userEmail).orElseThrow(()
+                -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
+
+        if (!user.getUsersContacts().contains(contact)){
+            throw new ActionNotAllowedException(CommonErrorMessages.ACCESS_DENIED);
         }
 
         contact.setFirstName(contactRequestDto.getFirstName());
@@ -71,40 +82,38 @@ public class ContactService {
         contact.setPhoneNumber(contactRequestDto.getPhoneNumber());
         contact.setUpdatedAt(LocalDateTime.now());
 
-        return "Updated";
-
+        return contactMapper.contactToContactInfoDto(contact);
     }
 
-    public String deleteContactById(UUID userId, UUID contactId) {
+    public void deleteContactById(String email, UUID contactId) {
 
-        var user = userRepository.findByGuid(userId).orElseThrow(() ->
-                new UserNotFoundException("Invalid user id"));
+        var user = userRepository.findByEmail(email).orElseThrow(() ->
+                new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
 
         var contact = contactRepository.findByGuid(contactId).orElseThrow(()
-                -> new ContactNotFoundException("Invalid contact id"));
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
 
-        if (user.getUsersContacts().contains(contact)) {
-            contactRepository.deleteContactById(contact.getId());
-            user.getUsersContacts().remove(contact);
+        if (!user.getUsersContacts().contains(contact)) {
+            throw new InvalidEmailException(CommonErrorMessages.ACCESS_DENIED);
         }
 
-        return "Deleted";
+        contactRepository.deleteById(contact.getId());
+        user.getUsersContacts().remove(contact);
 
     }
 
-    public String addContact(ContactCreationDto contactCreationDto, UUID id) {
+    public ContactResponseDto addContact(ContactRequestDto contactRequestDto, UUID id) {
 
         var user = userRepository.findByGuid(id).orElseThrow(() ->
-                new UserNotFoundException("Invalid id"));
+                new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
 
-        var contact = contactMapper.contactCreationDtoToUser(contactCreationDto);
+        var contact = contactMapper.contactCreationDtoToUser(contactRequestDto);
 
         contact.setUser(user);
         contactRepository.save(contact);
         user.getUsersContacts().add(contact);
 
-        return "Created!";
-
+        return contactMapper.contactToContactInfoDto(contact);
     }
 
 }

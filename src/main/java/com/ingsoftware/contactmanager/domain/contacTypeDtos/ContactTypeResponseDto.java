@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class ContactTypeInfoDto {
+public class ContactTypeResponseDto {
 
     private String value;
     private LocalDateTime createdAt;

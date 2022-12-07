@@ -1,9 +1,6 @@
 package com.ingsoftware.contactmanager.controllers;
 
-import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
-import com.ingsoftware.contactmanager.domain.userDtos.UserInfoDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserLogInDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRegisterDto;
+import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
 import com.ingsoftware.contactmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,45 +8,41 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping()
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper mapper;
 
-    @GetMapping()
-    public ResponseEntity<List<UserInfoDto>> findAllUsers() {
+    @GetMapping("/users/all")
+    public ResponseEntity<List<UserResponseDto>> findAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    @GetMapping("/hello")
-    public ResponseEntity<String> helloWorldApi() {
-        return ResponseEntity.ok(userService.helloWorldApi());
+    @GetMapping("/{userUUID}/users")
+    public ResponseEntity<UserResponseDto> findUser(@PathVariable UUID userUUID) {
+        return ResponseEntity.ok(userService.findUser(userUUID));
     }
 
-    @PostMapping()
-    public ResponseEntity<UserInfoDto> createUser(@RequestBody UserRegisterDto userRegisterDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userRegisterDto));
+    @PostMapping("/users")
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto userRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userRequestDto));
     }
 
-    @PostMapping("/user")
-    public ResponseEntity<UserInfoDto> userLogIn(@RequestBody UserLogInDto userLogInDto) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(mapper.userToUserInfoDto(userService.
-                userLogIn(userLogInDto.getEmail(), userLogInDto.getPassword())));
+    @DeleteMapping("/{userUUID}/users")
+    public ResponseEntity<String> deleteUserById(@PathVariable("userUUID") UUID id) {
+        userService.deleteUserById(id);
+        return ResponseEntity.ok(HttpStatus.OK.name());
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable("id") UUID id) {
-        return ResponseEntity.ok(userService.deleteUserById(id));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable("id") UUID userID, @RequestBody UserRequestDto userRequestDto) {
+    @PutMapping("/{userUUID}/users")
+    public ResponseEntity<UserResponseDto> updateUser(@PathVariable("userUUID") UUID userID,
+                                             @RequestBody @Valid UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.editUser(userID, userRequestDto));
     }
 

@@ -1,6 +1,6 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeInfoDto;
+import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.entitys.ContactType;
 import org.mapstruct.Mapper;
@@ -17,6 +17,6 @@ public abstract class ContactTypeMapper {
     public abstract ContactType contactTypeDtoToEntity(ContactTypeRequestDto contactTypeRequestDto);
 
 
-    public abstract ContactTypeInfoDto entityToInfoDto(ContactType contactType);
+    public abstract ContactTypeResponseDto entityToInfoDto(ContactType contactType);
 
 }

@@ -1,17 +1,17 @@
-package com.ingsoftware.contactmanager.domain.userDtos;
+package com.ingsoftware.contactmanager.domain.contactDtos;
 
-import com.ingsoftware.contactmanager.domain.enums.Role;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class UserInfoDto {
+public class ContactResponseDto {
 
     private String firstName;
     private String lastName;
     private String email;
-    private Role role;
+    private String phoneNumber;
+    private String type;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

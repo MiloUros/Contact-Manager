@@ -1,8 +1,8 @@
 package com.ingsoftware.contactmanager.services;
 
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeInfoDto;
+import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
-import com.ingsoftware.contactmanager.domain.entitys.Contact;
+import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
 import com.ingsoftware.contactmanager.domain.mappers.ContactTypeMapper;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
 import com.ingsoftware.contactmanager.exceptions.ContactTypeExistsException;
@@ -26,10 +26,10 @@ public class ContactTypeService {
     private final ContactTypeMapper contactTypeMapper;
     private final ContactRepository contactRepository;
 
-    public ContactTypeInfoDto createContactType(ContactTypeRequestDto contactTypeRequestDto) {
+    public ContactTypeResponseDto createContactType(ContactTypeRequestDto contactTypeRequestDto) {
 
         if (contactTypeRepository.existsByValueIgnoreCase(contactTypeRequestDto.getValue())) {
-            throw new ContactTypeExistsException("Contact Type already taken!");
+            throw new ContactTypeExistsException(CommonErrorMessages.CONTACT_TYPE_TAKEN);
         }
 
         var contactType = contactTypeMapper.contactTypeDtoToEntity(contactTypeRequestDto);
@@ -39,29 +39,19 @@ public class ContactTypeService {
 
     }
 
-    public String deleteContactTypeById(UUID id) {
+    public void deleteContactTypeById(UUID id) {
 
         if (!contactTypeRepository.existsByGuid(id)) {
-            throw new ContactTypeNotFound("Contact Type not found");
-        }
-
-        var contactType = contactTypeRepository.findByGuid(id).orElseThrow(()
-                -> new ContactTypeNotFound("Contact Type not found"));
-
-        List<Contact> contactsWithContactType = contactType.getContactsPerContactType();
-
-        if (contactsWithContactType != null) {
-            throw new ContactTypeExistsException("Some contacts have this contact type and u can't delete it.");
+            throw new ContactTypeNotFound(CommonErrorMessages.CONTACT_TYPE_NOT_FOUND);
         }
 
         contactTypeRepository.deleteByGuid(id);
-        return "Deleted";
 
     }
 
-    public List<ContactTypeInfoDto> findAll() {
+    public List<ContactTypeResponseDto> findAll() {
 
-        List<ContactTypeInfoDto> allContactTypes = new ArrayList<>();
+        List<ContactTypeResponseDto> allContactTypes = new ArrayList<>();
 
         for (var contactType : contactTypeRepository.findAll()) {
             allContactTypes.add(contactTypeMapper.entityToInfoDto(contactType));
@@ -70,17 +60,22 @@ public class ContactTypeService {
 
     }
 
-    public String updateContactType(UUID contactID, ContactTypeRequestDto contactTypeRequestDto) {
+    public ContactTypeResponseDto findOne(UUID contactTypeUUID) {
+        var contactType = contactTypeRepository.findByGuid(contactTypeUUID).orElseThrow(()
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_TYPE_GUID));
+        return contactTypeMapper.entityToInfoDto(contactType);
+    }
 
-        var contact = contactRepository.findByGuid(contactID).orElseThrow(()
-                -> new ContactNotFoundException("Invalid contact id"));
+    public ContactTypeResponseDto updateContactTypeForContact(UUID contactUUID, ContactTypeRequestDto contactTypeRequestDto) {
+
+        var contact = contactRepository.findByGuid(contactUUID).orElseThrow(()
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
 
         var contactType = contactTypeRepository.findByValue(contactTypeRequestDto.getValue())
-                .orElseThrow(() -> new ContactTypeExistsException("Contact Type not found"));
+                .orElseThrow(() -> new ContactTypeExistsException(CommonErrorMessages.CONTACT_TYPE_NOT_FOUND));
 
         contact.setContactType(contactType);
         contact.setType(contactType.getValue());
-
-        return "Updated";
+        return contactTypeMapper.entityToInfoDto(contactType);
     }
 }
