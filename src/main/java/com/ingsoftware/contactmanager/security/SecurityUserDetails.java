@@ -1,5 +1,6 @@
-package com.ingsoftware.contactmanager.domain.entitys;
+package com.ingsoftware.contactmanager.security;
 
+import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,14 +10,14 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class BridgeUser implements UserDetails {
+public class SecurityUserDetails implements UserDetails {
 
     private final Long id;
     private final String email;
     private final String password;
     private final Role role;
 
-    public BridgeUser(User user) {
+    public SecurityUserDetails(User user) {
         this.id = user.getId();
         this.email = user.getEmail();
         this.password = user.getPassword();

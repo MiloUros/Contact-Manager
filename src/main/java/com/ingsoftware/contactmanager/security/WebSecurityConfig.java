@@ -1,11 +1,11 @@
 package com.ingsoftware.contactmanager.security;
 
 import com.ingsoftware.contactmanager.domain.enums.Role;
-import com.ingsoftware.contactmanager.services.UserRepoDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,11 +31,13 @@ public class WebSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests(auth -> auth
-                        .antMatchers("/api/users").hasAnyAuthority(Role.ADMIN.name())
-                        .antMatchers("/api/contacts/all").hasAnyAuthority(Role.ADMIN.name())
-                        .antMatchers("/api/contacts").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
-                        .antMatchers("/api/contacts/{contactId}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
-                        .antMatchers("/api/contacts/{contactUUID}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
+                        .antMatchers(HttpMethod.POST, "/contact-types").hasAnyAuthority(Role.ADMIN.name())
+                        .antMatchers(HttpMethod.PUT, "/contacts-types/{contactTypeUUID}").hasAnyAuthority(Role.ADMIN.name())
+                        .antMatchers(HttpMethod.DELETE, "/contacts-types/{contactTypeUUID}").hasAnyAuthority(Role.ADMIN.name())
+                        .antMatchers(HttpMethod.DELETE, "/contacts/{contactUUID}").hasAnyAuthority(Role.ADMIN.name(), Role.USER.name())
+                        .antMatchers(HttpMethod.POST, "/users").hasAnyAuthority(Role.ADMIN.name())
+                        .antMatchers(HttpMethod.PUT, "/users/{userUUID}").hasAnyAuthority(Role.ADMIN.name())
+                        .antMatchers(HttpMethod.DELETE, "/users/{userUUID}").hasAnyAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .userDetailsService(userRepoDetailService)

@@ -2,7 +2,6 @@ package com.ingsoftware.contactmanager.domain.contactDtos;
 
 import lombok.Data;
 
-import javax.persistence.Column;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -20,7 +19,6 @@ public class ContactRequestDto {
     private String address;
     @Size(max = 100, message = "Must not exceed 100 characters")
     private String info;
-    @Column(unique = true)
     @NotBlank
     @Size(max = 40, message = "Email must not exceed 40 characters.")
     @Email(regexp = "^(.+)@(.+)$", message = "Invalid email format.")

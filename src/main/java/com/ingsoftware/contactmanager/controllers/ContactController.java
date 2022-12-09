@@ -17,29 +17,29 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
+@RequestMapping("/contacts")
 public class ContactController {
 
     private final ContactService contactService;
     private final UserService userService;
 
-    @GetMapping("/contacts/all")
+    @GetMapping("/all")
     public ResponseEntity<List<ContactResponseDto>> findAllContacts() {
         return ResponseEntity.ok(contactService.findAllContacts());
     }
 
-    @GetMapping("/{contactUUID}/contacts")
+    @GetMapping("/{contactUUID}")
     public ResponseEntity<ContactResponseDto> findContact(@PathVariable("contactUUID") UUID contactId) {
         return ResponseEntity.ok(contactService.findContact(contactId));
     }
 
-    @PostMapping("/contacts/all")
+    @PostMapping("/all")
     public ResponseEntity<List<ContactResponseDto>> findAllContactsForUser(
             @CurrentSecurityContext(expression="authentication.name") String email) {
         return ResponseEntity.ok(contactService.findAllUserContacts(userService.findUser(email).getGuid()));
     }
 
-    @PutMapping("/{contactUUID}/contacts")
+    @PutMapping("/{contactUUID}")
     public ResponseEntity<ContactResponseDto> updateContact(@PathVariable("contactUUID") UUID contactId
             , @RequestBody @Valid ContactRequestDto contactRequestDto,
                                                 @CurrentSecurityContext(expression="authentication.name") String email) {
@@ -47,14 +47,14 @@ public class ContactController {
                 .body(contactService.editContact(contactId, contactRequestDto, email));
     }
 
-    @DeleteMapping("/{contactUUID}/contacts")
+    @DeleteMapping("/{contactUUID}")
     public ResponseEntity<String> deleteUserContactById(@CurrentSecurityContext(expression="authentication.name")
                                                             String email, @PathVariable("contactUUID") UUID contactId) {
         contactService.deleteContactById(email, contactId);
         return ResponseEntity.status(HttpStatus.OK).body(HttpStatus.OK.name());
     }
 
-    @PostMapping("/contacts")
+    @PostMapping()
     public ResponseEntity<ContactResponseDto> createContact(@RequestBody @Valid ContactRequestDto contactRequestDto,
                                         @CurrentSecurityContext(expression="authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.CREATED)

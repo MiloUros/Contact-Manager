@@ -1,12 +1,14 @@
 package com.ingsoftware.contactmanager.services;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
 import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
+import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.entitys.Contact;
+import com.ingsoftware.contactmanager.domain.entitys.User;
+import com.ingsoftware.contactmanager.domain.enums.Role;
 import com.ingsoftware.contactmanager.domain.mappers.ContactMapper;
 import com.ingsoftware.contactmanager.exceptions.ActionNotAllowedException;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
-import com.ingsoftware.contactmanager.exceptions.InvalidEmailException;
 import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
@@ -14,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,91 +29,79 @@ public class ContactService {
     private final ContactMapper contactMapper;
 
     public List<ContactResponseDto> findAllContacts() {
+        return contactMapper.contactToContactResponseDtoList(contactRepository.findAll());
+    }
 
-        List<ContactResponseDto> contactResponseDtoList = new ArrayList<>();
+    public ContactResponseDto findContact(UUID contactUUID) {
 
-        for (var contacts : contactRepository.findAll()) {
-            contactResponseDtoList.add(contactMapper.contactToContactInfoDto(contacts));
-        }
+        var contact = findContactByGuid(contactUUID);
 
-        return contactResponseDtoList;
+        return contactMapper.contactToContactResponseDto(contact);
+    }
+
+    public List<ContactResponseDto> findAllUserContacts(UUID userUUID) {
+
+        var user = findUSerByGuid(userUUID);
+
+        return contactMapper.contactToContactResponseDtoList(user.getUsersContacts());
 
     }
 
-    public ContactResponseDto findContact(UUID contactID) {
+    public ContactResponseDto editContact(UUID contactUUID, ContactRequestDto contactRequestDto, String userEmail) {
 
-        var contact = contactRepository.findByGuid(contactID).orElseThrow(()
-                -> new ContactNotFoundException(CommonErrorMessages.CONTACT_NOT_FOUND));
+        var contact = findContactByGuid(contactUUID);
 
-        return contactMapper.contactToContactInfoDto(contact);
-    }
+        var user = findUserByEmail(userEmail);
 
-    public List<ContactResponseDto> findAllUserContacts(UUID userID) {
-
-        List<ContactResponseDto> allContacts = new ArrayList<>();
-
-        var user = userRepository.findByGuid(userID).orElseThrow(() -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
-
-        for (var contact : user.getUsersContacts()) {
-            allContacts.add(contactMapper.contactToContactInfoDto(contact));
-        }
-
-        return allContacts;
-
-    }
-
-    public ContactResponseDto editContact(UUID contactId, ContactRequestDto contactRequestDto, String userEmail) {
-
-        var contact = contactRepository.findByGuid(contactId).orElseThrow(()
-                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
-
-        var user = userRepository.findByEmail(userEmail).orElseThrow(()
-                -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
-
-        if (!user.getUsersContacts().contains(contact)){
+        if (!contact.getUser().equals(user)) {
             throw new ActionNotAllowedException(CommonErrorMessages.ACCESS_DENIED);
         }
 
-        contact.setFirstName(contactRequestDto.getFirstName());
-        contact.setLastName(contactRequestDto.getLastName());
-        contact.setEmail(contactRequestDto.getEmail());
-        contact.setInfo(contactRequestDto.getInfo());
-        contact.setAddress(contactRequestDto.getAddress());
-        contact.setPhoneNumber(contactRequestDto.getPhoneNumber());
-        contact.setUpdatedAt(LocalDateTime.now());
+        contactMapper.updateEntityFromRequest(contact, contactRequestDto);
 
-        return contactMapper.contactToContactInfoDto(contact);
+        return contactMapper.contactToContactResponseDto(contact);
     }
 
-    public void deleteContactById(String email, UUID contactId) {
+    public void deleteContactById(String userEmail, UUID contactUUID) {
 
-        var user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
+        var user = findUserByEmail(userEmail);
 
-        var contact = contactRepository.findByGuid(contactId).orElseThrow(()
-                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
+        var contact = findContactByGuid(contactUUID);
 
-        if (!user.getUsersContacts().contains(contact)) {
-            throw new InvalidEmailException(CommonErrorMessages.ACCESS_DENIED);
+        if (!contact.getUser().equals(user) && user.getRole().equals(Role.USER)) {
+            throw new ActionNotAllowedException(CommonErrorMessages.ACCESS_DENIED);
         }
 
         contactRepository.deleteById(contact.getId());
-        user.getUsersContacts().remove(contact);
 
     }
 
-    public ContactResponseDto addContact(ContactRequestDto contactRequestDto, UUID id) {
+    @Transactional
+    public ContactResponseDto addContact(ContactRequestDto contactRequestDto, UUID userUUID) {
 
-        var user = userRepository.findByGuid(id).orElseThrow(() ->
-                new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
+        var user = findUSerByGuid(userUUID);
 
-        var contact = contactMapper.contactCreationDtoToUser(contactRequestDto);
+        var contact = contactMapper.contactRequestDtoToEntity(contactRequestDto);
 
         contact.setUser(user);
         contactRepository.save(contact);
-        user.getUsersContacts().add(contact);
 
-        return contactMapper.contactToContactInfoDto(contact);
+        return contactMapper.contactToContactResponseDto(contact);
+    }
+
+    private Contact findContactByGuid(UUID contactUUID) {
+        return contactRepository.findContactByGuid(contactUUID).orElseThrow(()
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
+    }
+
+    private User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(()
+                -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
+    }
+
+    private User findUSerByGuid(UUID userUUID) {
+      return userRepository.findUserByGuid(userUUID).orElseThrow(()
+                -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
     }
 
 }

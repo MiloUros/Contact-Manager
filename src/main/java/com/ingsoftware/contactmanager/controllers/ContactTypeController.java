@@ -14,37 +14,37 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
+@RequestMapping("/contact-types")
 public class ContactTypeController {
 
     private final ContactTypeService contactTypeService;
 
-    @GetMapping("/contact-types/all")
+    @GetMapping("/all")
     public ResponseEntity<List<ContactTypeResponseDto>> findAll() {
         return ResponseEntity.ok(contactTypeService.findAll());
     }
 
-    @GetMapping("/contact-types")
-    public ResponseEntity<ContactTypeResponseDto> findContactType(UUID contactTypeUUID) {
+    @GetMapping("/{contactTypeUUID}")
+    public ResponseEntity<ContactTypeResponseDto> findContactType(@PathVariable UUID contactTypeUUID) {
         return ResponseEntity.ok(contactTypeService.findOne(contactTypeUUID));
     }
 
-    @PostMapping("/contact-types")
+    @PostMapping()
     public ResponseEntity<ContactTypeResponseDto> createContactType(@RequestBody @Valid ContactTypeRequestDto contactTypeRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).
                 body(contactTypeService.createContactType(contactTypeRequestDto));
     }
 
-    @DeleteMapping({"/{contactTypeUUID}/contact-types"})
+    @DeleteMapping({"/{contactTypeUUID}"})
     public ResponseEntity<String> deleteContactType(@PathVariable UUID contactTypeUUID) {
         contactTypeService.deleteContactTypeById(contactTypeUUID);
         return ResponseEntity.ok(HttpStatus.OK.name());
     }
 
-    @PutMapping("/{contactTypeUUID}/contact-types")
+    @PutMapping("/{contactTypeUUID}")
     public ResponseEntity<ContactTypeResponseDto> updateContactType(@PathVariable UUID contactTypeUUID,
                                                     @RequestBody @Valid ContactTypeRequestDto contactTypeRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).
-                body(contactTypeService.updateContactTypeForContact(contactTypeUUID, contactTypeRequestDto));
+                body(contactTypeService.updateContactType(contactTypeUUID, contactTypeRequestDto));
     }
 }

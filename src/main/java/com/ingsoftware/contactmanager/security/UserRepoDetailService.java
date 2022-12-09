@@ -1,7 +1,6 @@
-package com.ingsoftware.contactmanager.services;
+package com.ingsoftware.contactmanager.security;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
-import com.ingsoftware.contactmanager.domain.entitys.BridgeUser;
 import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,7 @@ public class UserRepoDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username).map(BridgeUser::new)
+        return userRepository.findByEmail(username).map(SecurityUserDetails::new)
                 .orElseThrow(()-> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
     }
 

@@ -14,33 +14,33 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping()
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/users/all")
+    @GetMapping("/all")
     public ResponseEntity<List<UserResponseDto>> findAllUsers() {
         return ResponseEntity.ok(userService.findAllUsers());
     }
 
-    @GetMapping("/{userUUID}/users")
+    @GetMapping("/{userUUID}")
     public ResponseEntity<UserResponseDto> findUser(@PathVariable UUID userUUID) {
         return ResponseEntity.ok(userService.findUser(userUUID));
     }
 
-    @PostMapping("/users")
+    @PostMapping()
     public ResponseEntity<UserResponseDto> createUser(@RequestBody @Valid UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.registerUser(userRequestDto));
     }
 
-    @DeleteMapping("/{userUUID}/users")
+    @DeleteMapping("/{userUUID}")
     public ResponseEntity<String> deleteUserById(@PathVariable("userUUID") UUID id) {
         userService.deleteUserById(id);
         return ResponseEntity.ok(HttpStatus.OK.name());
     }
 
-    @PutMapping("/{userUUID}/users")
+    @PutMapping("/{userUUID}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable("userUUID") UUID userID,
                                              @RequestBody @Valid UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.editUser(userID, userRequestDto));

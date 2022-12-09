@@ -1,11 +1,10 @@
 package com.ingsoftware.contactmanager.domain.entitys;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Generated;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -60,7 +59,7 @@ public class Contact {
     @Size(max = 100, message = "Must not exceed 100 characters")
     private String info;
 
-    @JsonIgnore
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "contact_type_id")
     private ContactType contactType;
@@ -68,7 +67,7 @@ public class Contact {
     @Size(max = 25, message = "Must not exceed 25 characters")
     private String type;
 
-    @JsonIgnore
+//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", unique = true)
     @NotNull

@@ -3,17 +3,16 @@ package com.ingsoftware.contactmanager.services;
 import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
+import com.ingsoftware.contactmanager.domain.entitys.ContactType;
 import com.ingsoftware.contactmanager.domain.mappers.ContactTypeMapper;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
 import com.ingsoftware.contactmanager.exceptions.ContactTypeExistsException;
 import com.ingsoftware.contactmanager.exceptions.ContactTypeNotFound;
-import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.ContactTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +23,6 @@ public class ContactTypeService {
 
     private final ContactTypeRepository contactTypeRepository;
     private final ContactTypeMapper contactTypeMapper;
-    private final ContactRepository contactRepository;
 
     public ContactTypeResponseDto createContactType(ContactTypeRequestDto contactTypeRequestDto) {
 
@@ -32,10 +30,10 @@ public class ContactTypeService {
             throw new ContactTypeExistsException(CommonErrorMessages.CONTACT_TYPE_TAKEN);
         }
 
-        var contactType = contactTypeMapper.contactTypeDtoToEntity(contactTypeRequestDto);
+        var contactType = contactTypeMapper.contactTypeRequestDtoToEntity(contactTypeRequestDto);
         contactTypeRepository.save(contactType);
 
-        return contactTypeMapper.entityToInfoDto(contactType);
+        return contactTypeMapper.entityToContactTypeResponseDto(contactType);
 
     }
 
@@ -50,32 +48,25 @@ public class ContactTypeService {
     }
 
     public List<ContactTypeResponseDto> findAll() {
-
-        List<ContactTypeResponseDto> allContactTypes = new ArrayList<>();
-
-        for (var contactType : contactTypeRepository.findAll()) {
-            allContactTypes.add(contactTypeMapper.entityToInfoDto(contactType));
-        }
-        return allContactTypes;
+        return contactTypeMapper.entityToContactTypeResponseDtoList(contactTypeRepository.findAll());
 
     }
 
     public ContactTypeResponseDto findOne(UUID contactTypeUUID) {
-        var contactType = contactTypeRepository.findByGuid(contactTypeUUID).orElseThrow(()
-                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_TYPE_GUID));
-        return contactTypeMapper.entityToInfoDto(contactType);
+        var contactType = findContactTypeByGuid(contactTypeUUID);
+        return contactTypeMapper.entityToContactTypeResponseDto(contactType);
     }
 
-    public ContactTypeResponseDto updateContactTypeForContact(UUID contactUUID, ContactTypeRequestDto contactTypeRequestDto) {
+    public ContactTypeResponseDto updateContactType(UUID contactTypeUUID, ContactTypeRequestDto contactTypeRequestDto) {
 
-        var contact = contactRepository.findByGuid(contactUUID).orElseThrow(()
-                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
+        var contactType = findContactTypeByGuid(contactTypeUUID);
 
-        var contactType = contactTypeRepository.findByValue(contactTypeRequestDto.getValue())
-                .orElseThrow(() -> new ContactTypeExistsException(CommonErrorMessages.CONTACT_TYPE_NOT_FOUND));
+        contactTypeMapper.updateEntityFromRequest(contactType, contactTypeRequestDto);
+        return contactTypeMapper.entityToContactTypeResponseDto(contactType);
+    }
 
-        contact.setContactType(contactType);
-        contact.setType(contactType.getValue());
-        return contactTypeMapper.entityToInfoDto(contactType);
+    private ContactType findContactTypeByGuid(UUID contactTypeUUID) {
+        return contactTypeRepository.findContactTypeByGuid(contactTypeUUID).orElseThrow(()
+                -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_TYPE_GUID));
     }
 }

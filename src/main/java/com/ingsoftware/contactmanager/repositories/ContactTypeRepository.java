@@ -12,8 +12,7 @@ import java.util.UUID;
 public interface ContactTypeRepository extends JpaRepository<ContactType, Long> {
 
     List<ContactType> findAll();
-    Optional<ContactType> findByValue(String value);
-    Optional<ContactType> findByGuid(UUID id);
+    Optional<ContactType> findContactTypeByGuid(UUID id);
     boolean existsByValueIgnoreCase(String value);
     boolean existsByGuid(UUID id);
     void deleteByGuid(UUID id);

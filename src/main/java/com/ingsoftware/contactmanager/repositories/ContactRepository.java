@@ -11,6 +11,6 @@ import java.util.UUID;
 @Repository
 public interface ContactRepository extends JpaRepository<Contact, Long> {
     List<Contact> findAll();
-    Optional<Contact> findByGuid(UUID id);
+    Optional<Contact> findContactByGuid(UUID id);
 
 }
