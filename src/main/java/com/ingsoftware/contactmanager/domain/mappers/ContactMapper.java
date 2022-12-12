@@ -1,7 +1,7 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.Contact;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

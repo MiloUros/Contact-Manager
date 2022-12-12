@@ -1,15 +1,16 @@
 package com.ingsoftware.contactmanager.controllers;
 
-import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -20,8 +21,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserResponseDto>> findAllUsers() {
-        return ResponseEntity.ok(userService.findAllUsers());
+    public ResponseEntity<CustomPageDto<UserResponseDto>> findAllUsers(Pageable pageable) {
+        return ResponseEntity.ok(userService.findAllUsers(pageable));
     }
 
     @GetMapping("/{userUUID}")
@@ -42,7 +43,7 @@ public class UserController {
 
     @PutMapping("/{userUUID}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable("userUUID") UUID userID,
-                                             @RequestBody @Valid UserRequestDto userRequestDto) {
+                                                      @RequestBody @Valid UserRequestDto userRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUser(userID, userRequestDto));
     }
 

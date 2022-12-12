@@ -1,8 +1,9 @@
 package com.ingsoftware.contactmanager.services;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.ContactType;
 import com.ingsoftware.contactmanager.domain.mappers.ContactTypeMapper;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
@@ -10,10 +11,10 @@ import com.ingsoftware.contactmanager.exceptions.ContactTypeExistsException;
 import com.ingsoftware.contactmanager.exceptions.ContactTypeNotFound;
 import com.ingsoftware.contactmanager.repositories.ContactTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
 import java.util.UUID;
 
 @Service
@@ -50,8 +51,11 @@ public class ContactTypeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContactTypeResponseDto> findAll() {
-        return contactTypeMapper.entityToContactTypeResponseDtoList(contactTypeRepository.findAll());
+    public CustomPageDto<ContactTypeResponseDto> findAll(Pageable pageable) {
+        var contactTypes = contactTypeRepository.findAll(pageable)
+                .map(contactTypeMapper::entityToContactTypeResponseDto);
+        return new CustomPageDto<>(contactTypes.getContent(), pageable.getPageNumber(),
+                pageable.getPageSize(), contactTypes.getTotalElements());
 
     }
 

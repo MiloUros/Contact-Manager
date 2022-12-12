@@ -1,8 +1,8 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
 import com.ingsoftware.contactmanager.domain.entitys.User;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.mapstruct.Mapper;

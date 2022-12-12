@@ -1,18 +1,19 @@
 package com.ingsoftware.contactmanager.services;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
+import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.mappers.UserMapper;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.exceptions.EmailTakenException;
 import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
 import java.util.UUID;
 
 @Service
@@ -46,8 +47,10 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserResponseDto> findAllUsers() {
-        return userMapper.userToUserInfoDtoList(userRepository.findAll());
+    public CustomPageDto<UserResponseDto> findAllUsers(Pageable pageable) {
+        var users = userRepository.findAll(pageable).map(userMapper::userToUserInfoDto);
+        return new CustomPageDto<>(users.getContent(), pageable.getPageNumber(),
+                pageable.getPageSize(), users.getTotalElements());
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})

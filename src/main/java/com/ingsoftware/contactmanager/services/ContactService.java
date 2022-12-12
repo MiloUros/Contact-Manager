@@ -1,8 +1,9 @@
 package com.ingsoftware.contactmanager.services;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.Contact;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.enums.Role;
@@ -13,10 +14,11 @@ import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
-import java.util.List;
+
 import java.util.UUID;
 
 @Service
@@ -28,8 +30,10 @@ public class ContactService {
     private final ContactMapper contactMapper;
 
     @Transactional(readOnly = true)
-    public List<ContactResponseDto> findAllContacts() {
-        return contactMapper.contactToContactResponseDtoList(contactRepository.findAll());
+    public CustomPageDto<ContactResponseDto> findAllContacts(Pageable pageable) {
+        var contacts = contactRepository.findAll(pageable).map(contactMapper::contactToContactResponseDto);
+        return new CustomPageDto<>(contacts.getContent(), pageable.getPageNumber(),
+                pageable.getPageSize(), contacts.getTotalElements());
     }
 
     @Transactional(readOnly = true)
@@ -41,9 +45,18 @@ public class ContactService {
     }
 
     @Transactional(readOnly = true)
-    public List<ContactResponseDto> findAllUserContacts(User user) {
+    public CustomPageDto<ContactResponseDto> searchContacts(Specification<Contact> spec, Pageable pageable) {
+        var contacts = contactRepository.findAll(spec, pageable).map(contactMapper::contactToContactResponseDto);
+        return new CustomPageDto<>(contacts.getContent(), pageable.getPageNumber(),
+                pageable.getPageSize(), contacts.getTotalElements());
+    }
 
-        return contactMapper.contactToContactResponseDtoList(user.getUsersContacts());
+    @Transactional(readOnly = true)
+    public CustomPageDto<ContactResponseDto> findAllUserContacts(User user, Pageable pageable) {
+        var userContacts = contactRepository.findAllByUser(user, pageable)
+                .map(contactMapper::contactToContactResponseDto);
+        return new CustomPageDto<>(userContacts.getContent(), pageable.getPageNumber(),
+                pageable.getPageSize(), userContacts.getTotalElements());
 
     }
 
