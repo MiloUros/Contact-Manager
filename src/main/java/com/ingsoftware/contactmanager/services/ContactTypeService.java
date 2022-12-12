@@ -12,7 +12,7 @@ import com.ingsoftware.contactmanager.repositories.ContactTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +24,7 @@ public class ContactTypeService {
     private final ContactTypeRepository contactTypeRepository;
     private final ContactTypeMapper contactTypeMapper;
 
+    @Transactional(rollbackFor = {RuntimeException.class})
     public ContactTypeResponseDto createContactType(ContactTypeRequestDto contactTypeRequestDto) {
 
         if (contactTypeRepository.existsByValueIgnoreCase(contactTypeRequestDto.getValue())) {
@@ -37,7 +38,8 @@ public class ContactTypeService {
 
     }
 
-    public void deleteContactTypeById(UUID id) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public void deleteContactType(UUID id) {
 
         if (!contactTypeRepository.existsByGuid(id)) {
             throw new ContactTypeNotFound(CommonErrorMessages.CONTACT_TYPE_NOT_FOUND);
@@ -47,16 +49,19 @@ public class ContactTypeService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<ContactTypeResponseDto> findAll() {
         return contactTypeMapper.entityToContactTypeResponseDtoList(contactTypeRepository.findAll());
 
     }
 
-    public ContactTypeResponseDto findOne(UUID contactTypeUUID) {
+    @Transactional(readOnly = true)
+    public ContactTypeResponseDto findContactType(UUID contactTypeUUID) {
         var contactType = findContactTypeByGuid(contactTypeUUID);
         return contactTypeMapper.entityToContactTypeResponseDto(contactType);
     }
 
+    @Transactional(rollbackFor = {RuntimeException.class})
     public ContactTypeResponseDto updateContactType(UUID contactTypeUUID, ContactTypeRequestDto contactTypeRequestDto) {
 
         var contactType = findContactTypeByGuid(contactTypeUUID);

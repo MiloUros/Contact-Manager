@@ -26,7 +26,7 @@ public class ContactTypeController {
 
     @GetMapping("/{contactTypeUUID}")
     public ResponseEntity<ContactTypeResponseDto> findContactType(@PathVariable UUID contactTypeUUID) {
-        return ResponseEntity.ok(contactTypeService.findOne(contactTypeUUID));
+        return ResponseEntity.ok(contactTypeService.findContactType(contactTypeUUID));
     }
 
     @PostMapping()
@@ -37,7 +37,7 @@ public class ContactTypeController {
 
     @DeleteMapping({"/{contactTypeUUID}"})
     public ResponseEntity<String> deleteContactType(@PathVariable UUID contactTypeUUID) {
-        contactTypeService.deleteContactTypeById(contactTypeUUID);
+        contactTypeService.deleteContactType(contactTypeUUID);
         return ResponseEntity.ok(HttpStatus.OK.name());
     }
 

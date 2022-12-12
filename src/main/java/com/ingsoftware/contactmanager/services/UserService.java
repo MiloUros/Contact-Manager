@@ -11,7 +11,7 @@ import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,16 +22,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
+    @Transactional(readOnly = true)
     public User findUser(String email) {
         return findUserByEmail(email);
     }
 
+    @Transactional(readOnly = true)
     public UserResponseDto findUser(UUID userUUID) {
         var user = findUSerByGuid(userUUID);
         return userMapper.userToUserInfoDto(user);
     }
 
-    public UserResponseDto registerUser(UserRequestDto userRequestDto) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public UserResponseDto createUser(UserRequestDto userRequestDto) {
 
         if (userRepository.existsByEmail(userRequestDto.getEmail())) {
             throw new EmailTakenException(CommonErrorMessages.EMAIL_TAKEN);
@@ -42,17 +45,20 @@ public class UserService {
         return userMapper.userToUserInfoDto(user);
     }
 
+    @Transactional(readOnly = true)
     public List<UserResponseDto> findAllUsers() {
         return userMapper.userToUserInfoDtoList(userRepository.findAll());
     }
 
-    public void deleteUserById(UUID userUUID) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public void deleteUser(UUID userUUID) {
         var user = findUSerByGuid(userUUID);
         userRepository.delete(user);
 
     }
 
-    public UserResponseDto editUser(UUID userUUID, UserRequestDto userRequestDto) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public UserResponseDto updateUser(UUID userUUID, UserRequestDto userRequestDto) {
         var user = findUSerByGuid(userUUID);
 
         if (userRepository.existsByEmail(userRequestDto.getEmail()) && !user.getEmail().equals(userRequestDto.getEmail())) {

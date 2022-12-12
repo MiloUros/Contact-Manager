@@ -30,5 +30,6 @@ public class UserRequestDto {
 
     @Pattern(regexp = "ADMIN|USER")
     @Size(max = 50, message = "Must not exceed 50 characters")
+    @NotBlank
     private String role;
 }

@@ -15,23 +15,24 @@ import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class ContactService {
 
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final ContactMapper contactMapper;
 
+    @Transactional(readOnly = true)
     public List<ContactResponseDto> findAllContacts() {
         return contactMapper.contactToContactResponseDtoList(contactRepository.findAll());
     }
 
+    @Transactional(readOnly = true)
     public ContactResponseDto findContact(UUID contactUUID) {
 
         var contact = findContactByGuid(contactUUID);
@@ -39,15 +40,15 @@ public class ContactService {
         return contactMapper.contactToContactResponseDto(contact);
     }
 
-    public List<ContactResponseDto> findAllUserContacts(UUID userUUID) {
-
-        var user = findUSerByGuid(userUUID);
+    @Transactional(readOnly = true)
+    public List<ContactResponseDto> findAllUserContacts(User user) {
 
         return contactMapper.contactToContactResponseDtoList(user.getUsersContacts());
 
     }
 
-    public ContactResponseDto editContact(UUID contactUUID, ContactRequestDto contactRequestDto, String userEmail) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public ContactResponseDto updateContact(UUID contactUUID, ContactRequestDto contactRequestDto, String userEmail) {
 
         var contact = findContactByGuid(contactUUID);
 
@@ -62,22 +63,22 @@ public class ContactService {
         return contactMapper.contactToContactResponseDto(contact);
     }
 
-    public void deleteContactById(String userEmail, UUID contactUUID) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public void deleteContact(String userEmail, UUID contactUUID) {
 
         var user = findUserByEmail(userEmail);
 
         var contact = findContactByGuid(contactUUID);
 
-        if (!contact.getUser().equals(user) && user.getRole().equals(Role.USER)) {
+        if (contact.getUser().equals(user) || !user.getRole().equals(Role.ADMIN)) {
+            contactRepository.deleteById(contact.getId());
+        } else {
             throw new ActionNotAllowedException(CommonErrorMessages.ACCESS_DENIED);
         }
-
-        contactRepository.deleteById(contact.getId());
-
     }
 
-    @Transactional
-    public ContactResponseDto addContact(ContactRequestDto contactRequestDto, UUID userUUID) {
+    @Transactional(rollbackFor = {RuntimeException.class})
+    public ContactResponseDto createContact(ContactRequestDto contactRequestDto, UUID userUUID) {
 
         var user = findUSerByGuid(userUUID);
 
@@ -94,13 +95,13 @@ public class ContactService {
                 -> new ContactNotFoundException(CommonErrorMessages.INVALID_CONTACT_GUID));
     }
 
-    private User findUserByEmail(String email) {
+    public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(()
                 -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
     }
 
-    private User findUSerByGuid(UUID userUUID) {
-      return userRepository.findUserByGuid(userUUID).orElseThrow(()
+    public User findUSerByGuid(UUID userUUID) {
+        return userRepository.findUserByGuid(userUUID).orElseThrow(()
                 -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
     }
 

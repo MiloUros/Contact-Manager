@@ -1,8 +1,9 @@
 package com.ingsoftware.contactmanager.controllers;
 
 
-import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
+
 import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
+import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
 import com.ingsoftware.contactmanager.services.ContactService;
 import com.ingsoftware.contactmanager.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +34,10 @@ public class ContactController {
         return ResponseEntity.ok(contactService.findContact(contactId));
     }
 
-    @PostMapping("/all")
+    @GetMapping()
     public ResponseEntity<List<ContactResponseDto>> findAllContactsForUser(
             @CurrentSecurityContext(expression="authentication.name") String email) {
-        return ResponseEntity.ok(contactService.findAllUserContacts(userService.findUser(email).getGuid()));
+        return ResponseEntity.ok(contactService.findAllUserContacts(contactService.findUserByEmail(email)));
     }
 
     @PutMapping("/{contactUUID}")
@@ -44,13 +45,13 @@ public class ContactController {
             , @RequestBody @Valid ContactRequestDto contactRequestDto,
                                                 @CurrentSecurityContext(expression="authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(contactService.editContact(contactId, contactRequestDto, email));
+                .body(contactService.updateContact(contactId, contactRequestDto, email));
     }
 
     @DeleteMapping("/{contactUUID}")
-    public ResponseEntity<String> deleteUserContactById(@CurrentSecurityContext(expression="authentication.name")
+    public ResponseEntity<String> deleteUserContact(@CurrentSecurityContext(expression="authentication.name")
                                                             String email, @PathVariable("contactUUID") UUID contactId) {
-        contactService.deleteContactById(email, contactId);
+        contactService.deleteContact(email, contactId);
         return ResponseEntity.status(HttpStatus.OK).body(HttpStatus.OK.name());
     }
 
@@ -58,7 +59,7 @@ public class ContactController {
     public ResponseEntity<ContactResponseDto> createContact(@RequestBody @Valid ContactRequestDto contactRequestDto,
                                         @CurrentSecurityContext(expression="authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(contactService.addContact(contactRequestDto, userService.findUser(email).getGuid()));
+                .body(contactService.createContact(contactRequestDto, userService.findUser(email).getGuid()));
     }
 
 }

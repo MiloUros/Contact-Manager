@@ -59,7 +59,6 @@ public class Contact {
     @Size(max = 100, message = "Must not exceed 100 characters")
     private String info;
 
-//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "contact_type_id")
     private ContactType contactType;
@@ -67,7 +66,6 @@ public class Contact {
     @Size(max = 25, message = "Must not exceed 25 characters")
     private String type;
 
-//    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", unique = true)
     @NotNull
