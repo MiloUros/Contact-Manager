@@ -1,7 +1,9 @@
 package com.ingsoftware.contactmanager.config;
 
+import com.ingsoftware.contactmanager.domain.dtos.SwaggerPageable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -17,7 +19,8 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.withClassAnnotation(RestController.class))
-                .build();
+                .build()
+                .directModelSubstitute(Pageable.class, SwaggerPageable.class);
     }
 
 }
