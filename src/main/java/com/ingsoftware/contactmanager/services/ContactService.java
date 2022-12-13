@@ -91,9 +91,7 @@ public class ContactService {
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})
-    public ContactResponseDto createContact(ContactRequestDto contactRequestDto, UUID userUUID) {
-
-        var user = findUSerByGuid(userUUID);
+    public ContactResponseDto createContact(ContactRequestDto contactRequestDto, User user) {
 
         var contact = contactMapper.contactRequestDtoToEntity(contactRequestDto);
 
@@ -111,11 +109,6 @@ public class ContactService {
     public User findUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(()
                 -> new UserNotFoundException(CommonErrorMessages.USER_NOT_FOUND));
-    }
-
-    public User findUSerByGuid(UUID userUUID) {
-        return userRepository.findUserByGuid(userUUID).orElseThrow(()
-                -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
     }
 
 }
