@@ -4,6 +4,7 @@ import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
 import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeResponseDto;
 import com.ingsoftware.contactmanager.services.ContactTypeService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "Contact Type Controller")
 @RequestMapping("/contact-types")
 public class ContactTypeController {
 

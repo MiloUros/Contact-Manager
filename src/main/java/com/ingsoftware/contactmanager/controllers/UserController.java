@@ -4,6 +4,7 @@ import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.services.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "User Controller")
 @RequestMapping("/users")
 public class UserController {
 
