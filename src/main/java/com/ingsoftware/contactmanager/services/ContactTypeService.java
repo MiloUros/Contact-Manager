@@ -3,6 +3,7 @@ package com.ingsoftware.contactmanager.services;
 import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
+import com.ingsoftware.contactmanager.domain.contacTypeDtos.UpdateContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.entitys.ContactType;
 import com.ingsoftware.contactmanager.domain.mappers.ContactTypeMapper;
 import com.ingsoftware.contactmanager.exceptions.ContactNotFoundException;
@@ -62,11 +63,11 @@ public class ContactTypeService {
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})
-    public ContactTypeResponseDto updateContactType(UUID contactTypeUUID, ContactTypeRequestDto contactTypeRequestDto) {
+    public ContactTypeResponseDto updateContactType(UUID contactTypeUUID, UpdateContactTypeRequestDto updateContactTypeRequestDto) {
 
         var contactType = findContactTypeByGuid(contactTypeUUID);
 
-        contactTypeMapper.updateEntityFromRequest(contactType, contactTypeRequestDto);
+        contactTypeMapper.updateEntityFromRequest(contactType, updateContactTypeRequestDto);
         return contactTypeMapper.entityToContactTypeResponseDto(contactType);
     }
 

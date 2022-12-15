@@ -2,6 +2,7 @@ package com.ingsoftware.contactmanager.controllers;
 
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
 import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
+import com.ingsoftware.contactmanager.domain.contacTypeDtos.UpdateContactTypeRequestDto;
 import com.ingsoftware.contactmanager.services.ContactTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -43,8 +44,8 @@ public class ContactTypeController {
 
     @PutMapping("/{contactTypeUUID}")
     public ResponseEntity<ContactTypeResponseDto> updateContactType(@PathVariable UUID contactTypeUUID,
-                                                    @RequestBody @Valid ContactTypeRequestDto contactTypeRequestDto) {
+                                                    @RequestBody @Valid UpdateContactTypeRequestDto updateContactTypeRequestDto) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).
-                body(contactTypeService.updateContactType(contactTypeUUID, contactTypeRequestDto));
+                body(contactTypeService.updateContactType(contactTypeUUID, updateContactTypeRequestDto));
     }
 }

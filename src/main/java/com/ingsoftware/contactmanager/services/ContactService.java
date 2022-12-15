@@ -3,6 +3,7 @@ package com.ingsoftware.contactmanager.services;
 import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.contactDtos.ContactRequestDto;
 import com.ingsoftware.contactmanager.domain.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.domain.entitys.Contact;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.enums.Role;
@@ -48,7 +49,7 @@ public class ContactService {
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})
-    public ContactResponseDto updateContact(UUID contactUUID, ContactRequestDto contactRequestDto, String userEmail) {
+    public ContactResponseDto updateContact(UUID contactUUID, UpdateContactRequestDto updateContactRequestDto, String userEmail) {
 
         var contact = findContactByGuid(contactUUID);
 
@@ -58,7 +59,7 @@ public class ContactService {
             throw new ActionNotAllowedException(CommonErrorMessages.ACCESS_DENIED);
         }
 
-        contactMapper.updateEntityFromRequest(contact, contactRequestDto);
+        contactMapper.updateEntityFromRequest(contact, updateContactRequestDto);
 
         return contactMapper.contactToContactResponseDto(contact);
     }
