@@ -1,4 +1,4 @@
-package com.ingsoftware.contactmanager.domain.contactDtos;
+package com.ingsoftware.contactmanager.domain.dtos.contactDtos;
 
 import lombok.Data;
 

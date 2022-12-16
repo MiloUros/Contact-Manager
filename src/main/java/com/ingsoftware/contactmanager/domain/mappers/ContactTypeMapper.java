@@ -1,8 +1,8 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeRequestDto;
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.ContactTypeResponseDto;
-import com.ingsoftware.contactmanager.domain.contacTypeDtos.UpdateContactTypeRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.ContactTypeResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos.UpdateContactTypeRequestDto;
 import com.ingsoftware.contactmanager.domain.entitys.ContactType;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -28,10 +28,7 @@ public abstract class ContactTypeMapper {
 
     public abstract ContactTypeResponseDto entityToContactTypeResponseDto(ContactType contactType);
 
-    public abstract List<ContactTypeResponseDto> entityToContactTypeResponseDtoList(List<ContactType> contactType);
-
     boolean isNotEmpty(String value) {
         return value != null && !value.isEmpty();
     }
-
 }

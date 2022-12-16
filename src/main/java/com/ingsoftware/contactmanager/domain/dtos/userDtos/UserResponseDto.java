@@ -1,4 +1,4 @@
-package com.ingsoftware.contactmanager.domain.userDtos;
+package com.ingsoftware.contactmanager.domain.dtos.userDtos;
 
 import com.ingsoftware.contactmanager.domain.enums.Role;
 import lombok.Data;

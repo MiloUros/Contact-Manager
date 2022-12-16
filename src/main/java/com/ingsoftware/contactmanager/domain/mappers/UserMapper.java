@@ -1,10 +1,10 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UpdateUserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.User;
 import com.ingsoftware.contactmanager.domain.enums.Role;
-import com.ingsoftware.contactmanager.domain.userDtos.UpdateUserRequestDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserRequestDto;
-import com.ingsoftware.contactmanager.domain.userDtos.UserResponseDto;
 import lombok.AccessLevel;
 import lombok.Setter;
 import org.mapstruct.Mapper;
@@ -29,7 +29,7 @@ public abstract class UserMapper {
     @Mapping(target = "guid", ignore = true)
     public abstract User userRequestDtoToEntity(UserRequestDto userRequestDto);
 
-    public void updateEntityFromUpdateUserRequestDto(User user, UpdateUserRequestDto updateUserRequestDto) {
+    public void updateEntityFromRequest(User user, UpdateUserRequestDto updateUserRequestDto) {
         if ( updateUserRequestDto == null ) {
             return;
         }
@@ -57,10 +57,8 @@ public abstract class UserMapper {
     }
 
     public abstract UserResponseDto userToUserInfoDto(User user);
-    public abstract List<UserResponseDto> userToUserInfoDtoList(List<User> user);
 
     boolean isNotEmpty(String value) {
         return value != null && !value.isEmpty();
     }
-
 }

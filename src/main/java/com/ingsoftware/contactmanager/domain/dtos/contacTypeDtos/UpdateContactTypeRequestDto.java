@@ -1,14 +1,12 @@
-package com.ingsoftware.contactmanager.domain.contacTypeDtos;
+package com.ingsoftware.contactmanager.domain.dtos.contacTypeDtos;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
-public class ContactTypeRequestDto {
+public class UpdateContactTypeRequestDto {
 
-    @NotBlank
     @Size(max = 20, message = "Value size must not exceed 20 characters")
     private String value;
 
