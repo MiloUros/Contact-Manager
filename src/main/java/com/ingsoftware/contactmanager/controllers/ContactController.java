@@ -4,6 +4,7 @@ package com.ingsoftware.contactmanager.controllers;
 import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.services.ContactService;
 import com.ingsoftware.contactmanager.services.UserService;
 import lombok.NonNull;
@@ -51,10 +52,10 @@ public class ContactController {
 
     @PutMapping("/{contactUUID}")
     public ResponseEntity<ContactResponseDto> updateContact(@PathVariable("contactUUID") UUID contactId
-            , @RequestBody @Valid ContactRequestDto contactRequestDto,
+            , @RequestBody @Valid UpdateContactRequestDto updateContactRequestDto,
                                                             @CurrentSecurityContext(expression = "authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(contactService.updateContact(contactId, contactRequestDto, email));
+                .body(contactService.updateContact(contactId, updateContactRequestDto, email));
     }
 
     @DeleteMapping("/{contactUUID}")

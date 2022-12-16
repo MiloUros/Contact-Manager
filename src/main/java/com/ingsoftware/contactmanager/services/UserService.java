@@ -2,6 +2,7 @@ package com.ingsoftware.contactmanager.services;
 
 import com.ingsoftware.contactmanager.CommonErrorMessages;
 import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UpdateUserRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.domain.entitys.User;
@@ -61,14 +62,14 @@ public class UserService {
     }
 
     @Transactional(rollbackFor = {RuntimeException.class})
-    public UserResponseDto updateUser(UUID userUUID, UserRequestDto userRequestDto) {
+    public UserResponseDto updateUser(UUID userUUID, UpdateUserRequestDto updateUserRequestDto) {
         var user = findUSerByGuid(userUUID);
 
-        if (userRepository.existsByEmail(userRequestDto.getEmail()) && !user.getEmail().equals(userRequestDto.getEmail())) {
+        if (userRepository.existsByEmail(updateUserRequestDto.getEmail()) && !user.getEmail().equals(updateUserRequestDto.getEmail())) {
             throw new EmailTakenException(CommonErrorMessages.EMAIL_TAKEN);
         }
 
-        userMapper.updateEntityFromRequest(user, userRequestDto);
+        userMapper.updateEntityFromRequest(user, updateUserRequestDto);
 
         return userMapper.userToUserInfoDto(user);
     }
