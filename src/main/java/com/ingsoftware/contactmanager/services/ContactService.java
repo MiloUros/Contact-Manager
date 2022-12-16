@@ -15,7 +15,6 @@ import com.ingsoftware.contactmanager.repositories.ContactRepository;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,10 +44,13 @@ public class ContactService {
     }
 
     @Transactional(readOnly = true)
-    public CustomPageDto<ContactResponseDto> searchContacts(Specification<Contact> spec, Pageable pageable) {
-        var contacts = contactRepository.findAll(spec, pageable).map(contactMapper::contactToContactResponseDto);
-        return new CustomPageDto<>(contacts.getContent(), pageable.getPageNumber(),
-                pageable.getPageSize(), contacts.getTotalElements());
+    public CustomPageDto<ContactResponseDto> searchContacts(String email, String name, Pageable pageable) {
+        var user = findUserByEmail(email);
+        var userContacts = contactRepository
+                .findAllByUserAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(user, name, name, pageable)
+                .map(contactMapper::contactToContactResponseDto);
+        return new CustomPageDto<>(userContacts.getContent(), pageable.getPageNumber(),
+        pageable.getPageSize(), userContacts.getTotalElements());
     }
 
     @Transactional(readOnly = true)

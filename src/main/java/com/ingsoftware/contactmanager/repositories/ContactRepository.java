@@ -22,6 +22,5 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     Page<Contact> findAllByUser(User user, Pageable pageable);
 
-    Page<Contact> findAll(Specification spec, Pageable pageable);
-
+    Page<Contact> findAllByUserAndFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(User user, String name, String name1, Pageable pageable);
 }

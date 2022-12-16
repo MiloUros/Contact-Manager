@@ -4,31 +4,23 @@ package com.ingsoftware.contactmanager.controllers;
 import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto;
-import com.ingsoftware.contactmanager.domain.entitys.Contact;
 import com.ingsoftware.contactmanager.services.ContactService;
 import com.ingsoftware.contactmanager.services.UserService;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.web.SpecificationArgumentResolver;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Or;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.support.HandlerMethodArgumentResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/contacts")
-public class ContactController implements WebMvcConfigurer {
+public class ContactController {
 
     private final ContactService contactService;
     private final UserService userService;
@@ -51,13 +43,10 @@ public class ContactController implements WebMvcConfigurer {
 
     @GetMapping(value = "/search")
     public ResponseEntity<CustomPageDto<ContactResponseDto>> searchContacts(
-            @Or({
-                    @Spec(path = "firstName", spec = Equal.class),
-                    @Spec(path = "lastName", spec = Equal.class),
-                    @Spec(path = "email", spec = Equal.class),
-                    @Spec(path = "phoneNumber", spec = Equal.class)
-            }) Specification<Contact> spec, Pageable pageable) {
-        return ResponseEntity.ok(contactService.searchContacts(spec, pageable));
+            @CurrentSecurityContext(expression = "authentication.name") String email,
+            @RequestParam("param") @NonNull String name,
+            Pageable pageable) {
+        return ResponseEntity.ok(contactService.searchContacts(email, name,  pageable));
     }
 
     @PutMapping("/{contactUUID}")
@@ -80,10 +69,5 @@ public class ContactController implements WebMvcConfigurer {
                                                             @CurrentSecurityContext(expression = "authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(contactService.createContact(contactRequestDto, userService.findUser(email).getGuid()));
-    }
-
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(new SpecificationArgumentResolver());
     }
 }
