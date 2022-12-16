@@ -18,3 +18,7 @@ ALTER TABLE contacts ADD COLUMN address VARCHAR(100);
 ALTER TABLE contacts ADD COLUMN info VARCHAR(100);
 ALTER TABLE contacts ADD COLUMN guid uuid UNIQUE NOT NULL DEFAULT gen_random_uuid ();
 
+INSERT INTO users (email, password, role, created_at)
+VALUES('admin@gmail.com', '$2a$10$btMaeAlg7Q2s8prHN.sUu.R0ZgDEkQ125csQ3tFvefFHD2McVuzQm',
+       'ADMIN',current_timestamp);
+
