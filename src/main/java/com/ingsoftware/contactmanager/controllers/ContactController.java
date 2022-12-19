@@ -69,6 +69,6 @@ public class ContactController {
     public ResponseEntity<ContactResponseDto> createContact(@RequestBody @Valid ContactRequestDto contactRequestDto,
                                                             @CurrentSecurityContext(expression = "authentication.name") String email) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(contactService.createContact(contactRequestDto, userService.findUser(email).getGuid()));
+                .body(contactService.createContact(contactRequestDto, userService.findUser(email)));
     }
 }
