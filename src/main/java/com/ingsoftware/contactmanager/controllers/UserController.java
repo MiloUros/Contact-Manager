@@ -1,6 +1,7 @@
 package com.ingsoftware.contactmanager.controllers;
 
 import com.ingsoftware.contactmanager.domain.dtos.CustomPageDto;
+import com.ingsoftware.contactmanager.domain.dtos.userDtos.UpdateUserRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.userDtos.UserResponseDto;
 import com.ingsoftware.contactmanager.services.UserService;
@@ -70,8 +71,8 @@ public class UserController {
     })
     @PutMapping(value = "/{userUUID}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable("userUUID") UUID userID,
-                                                      @RequestBody @Valid UserRequestDto userRequestDto) {
-        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUser(userID, userRequestDto));
+                                                      @RequestBody @Valid UpdateUserRequestDto updateUserRequestDto) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(userService.updateUser(userID, updateUserRequestDto));
     }
 
 }
