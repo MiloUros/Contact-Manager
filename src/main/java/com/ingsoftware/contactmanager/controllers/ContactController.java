@@ -7,6 +7,7 @@ import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.services.ContactService;
 import com.ingsoftware.contactmanager.services.UserService;
+import io.swagger.annotations.Api;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "Contact Controller")
 @RequestMapping("/contacts")
 public class ContactController {
 
