@@ -7,6 +7,7 @@ import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.services.ContactService;
 import com.ingsoftware.contactmanager.services.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@Api(tags = "Contact Controller")
 @RequestMapping("/contacts")
 public class ContactController {
 
