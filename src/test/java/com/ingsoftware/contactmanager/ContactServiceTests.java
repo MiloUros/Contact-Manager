@@ -69,11 +69,11 @@ public class ContactServiceTests {
         contact.setLastName("Contact");
 
         contactResponseDto = new ContactResponseDto();
-        contactResponseDto.setFirstName("Response");
+        contactResponseDto.setFirstName("Test");
         contactResponseDto.setLastName("Test");
 
         contactRequestDto = new ContactRequestDto();
-        contactRequestDto.setFirstName("Request");
+        contactRequestDto.setFirstName("Test");
         contactRequestDto.setLastName("Test");
 
         updateContactRequestDto = new UpdateContactRequestDto();
@@ -134,6 +134,56 @@ public class ContactServiceTests {
 
         Assertions.assertThat(expectedDto).isNotNull();
         Assertions.assertThat(expectedDto.getFirstName()).isEqualTo(contactResponseDto.getFirstName());
+    }
+
+
+    private User createUser() {
+        User user = new User();
+        user.setId((long) (Math.random() * 1000));
+        user.setEmail("user@email.com");
+        user.setPassword("password");
+
+        return user;
+    }
+
+    private Contact createContact() {
+        Contact contact = new Contact();
+        contact.setFirstName("Test");
+        contact.setLastName("Contact");
+
+        return contact;
+    }
+
+    private ContactResponseDto createContactResponseDto() {
+        ContactResponseDto contactResponseDto = new ContactResponseDto();
+        contactResponseDto.setFirstName("Test");
+        contactResponseDto.setLastName("Test");
+
+        return contactResponseDto;
+    }
+
+    private ContactRequestDto createContactRequestDto() {
+        ContactRequestDto contactRequestDto = new ContactRequestDto();
+        contactRequestDto.setFirstName("Test");
+        contactRequestDto.setLastName("Test");
+
+        return contactRequestDto;
+    }
+
+    private UpdateContactRequestDto createUpdateContactRequestDto() {
+        UpdateContactRequestDto updateContactRequestDto = new UpdateContactRequestDto();
+        updateContactRequestDto.setEmail("test@gmail.com");
+        updateContactRequestDto.setFirstName("Milos");
+        updateContactRequestDto.setLastName("Milosevic");
+
+        return updateContactRequestDto;
+    }
+
+    private ContactType createContactType() {
+        ContactType contactType = new ContactType();
+        contactType.setValue("Type");
+
+        return contactType;
     }
 
 }
