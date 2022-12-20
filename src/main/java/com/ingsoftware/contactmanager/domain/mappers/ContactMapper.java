@@ -1,13 +1,11 @@
 package com.ingsoftware.contactmanager.domain.mappers;
 
-import com.ingsoftware.contactmanager.domain.dtos.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactRequestDto;
 import com.ingsoftware.contactmanager.domain.dtos.contactDtos.ContactResponseDto;
+import com.ingsoftware.contactmanager.domain.dtos.contactDtos.UpdateContactRequestDto;
 import com.ingsoftware.contactmanager.domain.entitys.Contact;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-
-import java.util.List;
 
 @Mapper
 public abstract class ContactMapper {
@@ -20,36 +18,37 @@ public abstract class ContactMapper {
     @Mapping(target = "guid", ignore = true)
     public abstract Contact contactRequestDtoToEntity(ContactRequestDto contactRequestDto);
 
-    public void updateEntityFromRequest(Contact contact, UpdateContactRequestDto updateContactRequestDto) {
+    public Contact updateEntityFromRequest(Contact contact, UpdateContactRequestDto updateContactRequestDto) {
 
         if (isNotEmpty(updateContactRequestDto.getFirstName())) {
-            contact.setFirstName( updateContactRequestDto.getFirstName() );
+            contact.setFirstName(updateContactRequestDto.getFirstName());
         }
 
         if (isNotEmpty(updateContactRequestDto.getLastName())) {
-            contact.setLastName( updateContactRequestDto.getLastName() );
+            contact.setLastName(updateContactRequestDto.getLastName());
         }
 
         if (isNotEmpty(updateContactRequestDto.getEmail())) {
-            contact.setEmail( updateContactRequestDto.getEmail() );
+            contact.setEmail(updateContactRequestDto.getEmail());
         }
 
         if (isNotEmpty(updateContactRequestDto.getPhoneNumber())) {
-            contact.setPhoneNumber( updateContactRequestDto.getPhoneNumber() );
+            contact.setPhoneNumber(updateContactRequestDto.getPhoneNumber());
         }
 
         if (isNotEmpty(updateContactRequestDto.getAddress())) {
-            contact.setAddress( updateContactRequestDto.getAddress() );
+            contact.setAddress(updateContactRequestDto.getAddress());
         }
 
         if (isNotEmpty(updateContactRequestDto.getInfo())) {
-            contact.setInfo( updateContactRequestDto.getInfo() );
+            contact.setInfo(updateContactRequestDto.getInfo());
         }
 
         if (isNotEmpty(updateContactRequestDto.getType())) {
-            contact.setType( updateContactRequestDto.getType() );
+            contact.setType(updateContactRequestDto.getType());
         }
 
+        return contact;
     }
 
     public abstract ContactResponseDto contactToContactResponseDto(Contact contact);

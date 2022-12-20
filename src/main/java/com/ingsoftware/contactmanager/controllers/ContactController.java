@@ -70,7 +70,7 @@ public class ContactController {
             @CurrentSecurityContext(expression = "authentication.name") String email,
             @RequestParam("param") @NonNull String name,
             Pageable pageable) {
-        return ResponseEntity.ok(contactService.searchContacts(email, name,  pageable));
+        return ResponseEntity.ok(contactService.searchContacts(email, name, pageable));
     }
 
     @Operation(summary = "Update contacts.")
