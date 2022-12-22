@@ -12,6 +12,9 @@ import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +26,7 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private JavaMailSender javaMailSender;
 
     @Transactional(readOnly = true)
     public User findUser(String email) {
@@ -44,6 +48,11 @@ public class UserService {
 
         var user = userMapper.userRequestDtoToEntity(userRequestDto);
         userRepository.save(user);
+        try {
+            sendNotifications(user);
+        } catch (MailException e) {
+            // catch error
+        }
         return userMapper.userToUserInfoDto(user);
     }
 
@@ -82,5 +91,15 @@ public class UserService {
     private User findUSerByGuid(UUID userUUID) {
         return userRepository.findUserByGuid(userUUID).orElseThrow(()
                 -> new UserNotFoundException(CommonErrorMessages.INVALID_USER_GUID));
+    }
+
+    public void sendNotifications(User user) throws MailException {
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setTo(user.getEmail());
+        mail.setFrom("urosmilovanovic995@gmail.com");
+        mail.setSubject("Registration confirmation.");
+        mail.setText("Successfully registered.");
+
+        javaMailSender.send(mail);
     }
 }
