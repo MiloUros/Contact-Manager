@@ -51,7 +51,7 @@ public class UserService {
         try {
             sendNotifications(user);
         } catch (MailException e) {
-            // catch error
+            e.printStackTrace();
         }
         return userMapper.userToUserInfoDto(user);
     }
