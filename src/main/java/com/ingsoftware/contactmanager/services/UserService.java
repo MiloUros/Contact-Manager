@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 @AllArgsConstructor
@@ -27,6 +29,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private JavaMailSender javaMailSender;
+    private final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Transactional(readOnly = true)
     public User findUser(String email) {
@@ -51,7 +54,7 @@ public class UserService {
         try {
             sendNotifications(user);
         } catch (MailException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
         return userMapper.userToUserInfoDto(user);
     }
