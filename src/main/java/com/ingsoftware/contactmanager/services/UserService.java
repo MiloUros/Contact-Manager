@@ -11,6 +11,7 @@ import com.ingsoftware.contactmanager.exceptions.EmailTakenException;
 import com.ingsoftware.contactmanager.exceptions.UserNotFoundException;
 import com.ingsoftware.contactmanager.repositories.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,6 +30,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private JavaMailSender javaMailSender;
+    private Environment environment;
     private final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Transactional(readOnly = true)
@@ -99,7 +101,7 @@ public class UserService {
     public void sendNotifications(User user) throws MailException {
         SimpleMailMessage mail = new SimpleMailMessage();
         mail.setTo(user.getEmail());
-        mail.setFrom("urosmilovanovic995@gmail.com");
+        mail.setFrom(environment.getProperty("spring.mail.username"));
         mail.setSubject("Registration confirmation.");
         mail.setText("Successfully registered.");
 
